@@ -5,6 +5,7 @@ export const userShema = z.object({
   username: z.string(),
   email: z.string(),
   password: z.string().optional(),
+  reputation: z.number().optional(),
 });
 
 export type userData = z.infer<typeof userShema>;
@@ -31,10 +32,11 @@ export const codeSnippetQuestionSchema = z.object({
   question: z.string().min(1, { message: "This field must not be empty" }),
   Questiondetail: z.string().min(1, { message: "This field must not be empty" }),
   language: z.string().min(1, { message: "This field must not be empty" }),
-  questionCode: z.string().min(1, { message: "This field must not be empty" }),
+  questionCode: z.string().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-
+  tags: z.array(z.string()).optional(),
+  _count: z.object({ answers: z.number() }).optional(),
   userId: z.string().optional(),
   User: userShema.optional(),
 });
@@ -48,6 +50,15 @@ export const codeSnippetAnswerSchema = z.object({
   correct: z.boolean().default(false),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
+  totalRating: z.number(),
+  rating: z
+    .array(
+      z.object({
+        ratingType: z.string(),
+        userId: z.string(),
+      })
+    )
+    .optional(),
 
   userId: z.string().optional(),
   User: userShema.optional(),

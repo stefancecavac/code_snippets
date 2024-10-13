@@ -5,9 +5,15 @@ import { useParams } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const useGetAllSnippetQuestions = () => {
+export const useGetAllSnippetQuestions = (q: string | null) => {
+  const url = new URL(`${API_BASE_URL}/api/snippets`);
+
+  if (q) {
+    url.searchParams.append("q", q);
+  }
+
   const getQuestions = async () => {
-    const response = await fetch(`${API_BASE_URL}/api/snippets`, {
+    const response = await fetch(url, {
       credentials: "include",
     });
     const json = await response.json();
@@ -20,7 +26,7 @@ export const useGetAllSnippetQuestions = () => {
   };
 
   const { data: codeSnippetQuestions, isLoading: codeSnippetQuestionsLoading } = useQuery({
-    queryKey: ["codeSnippets"],
+    queryKey: ["codeSnippets", q],
     queryFn: getQuestions,
     retry: false,
   });
@@ -77,10 +83,10 @@ export const useGetMySnippets = () => {
 export const useCreateSnipetQuestion = () => {
   const { showToast } = UseToastContext();
 
-  const postSnippetQuestion = async ({ Questiondetail, language, question, questionCode, userId }: codeSnippetQuestionData) => {
+  const postSnippetQuestion = async ({ Questiondetail, language, question, questionCode, tags, userId }: codeSnippetQuestionData) => {
     const response = await fetch(`${API_BASE_URL}/api/snippets`, {
       method: "POST",
-      body: JSON.stringify({ Questiondetail, language, question, questionCode, userId }),
+      body: JSON.stringify({ Questiondetail, language, question, questionCode, tags, userId }),
       headers: {
         "Content-type": "application/json",
       },

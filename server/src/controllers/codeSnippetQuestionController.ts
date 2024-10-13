@@ -2,13 +2,38 @@ import { Request, Response } from "express";
 import client from "../db/prismaClient";
 import { CodeSnippetQuestion } from "@prisma/client";
 
+type Filter = {
+  OR?: Array<{ question?: { contains: string; mode: "insensitive" } } | { language?: { contains: string; mode: "insensitive" } }>;
+};
+
 const getAllCodeSnippetQuestions = async (req: Request, res: Response) => {
+  const q = req.query.q as string;
+
+  const filter: Filter = {};
+
+  if (q) {
+    const search = q.split(",").map((term) => term.trim());
+
+    filter.OR = search.flatMap((term) => [
+      { question: { contains: term, mode: "insensitive" } },
+      { language: { contains: term, mode: "insensitive" } },
+    ]);
+  }
+
   try {
     const codeSnippets = await client.codeSnippetQuestion.findMany({
+      where: { ...filter },
+
       include: {
         User: {
           select: {
             username: true,
+            reputation: true,
+          },
+        },
+        _count: {
+          select: {
+            answers: true,
           },
         },
       },
@@ -54,7 +79,7 @@ const getSingleCodeSnippetQuestion = async (req: Request, res: Response) => {
 
 const createNewCodeSnippetQuestion = async (req: Request, res: Response) => {
   const { id } = req.user;
-  const { Questiondetail, questionCode, question, language } = req.body as CodeSnippetQuestion;
+  const { Questiondetail, questionCode, question, language, tags } = req.body as CodeSnippetQuestion;
 
   if (!Questiondetail || !questionCode || !question || !language) {
     return res.status(404).json({ message: "All fields are required" });
@@ -68,6 +93,18 @@ const createNewCodeSnippetQuestion = async (req: Request, res: Response) => {
         question: question,
         questionCode: questionCode,
         userId: id,
+        tags: tags,
+      },
+    });
+
+    await client.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        reputation: {
+          increment: 10,
+        },
       },
     });
 

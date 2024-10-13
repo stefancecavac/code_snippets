@@ -14,7 +14,7 @@ const getCurrentUser = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(201).json({ username: user?.username, userId: user?.id });
+    res.status(201).json({ username: user?.username, userId: user?.id, email: user?.email, reputation: user?.reputation });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Something went wrong" });
@@ -43,9 +43,7 @@ const registerUser = async (req: Request, res: Response) => {
       },
     });
     if (userNameExists) {
-      return res
-        .status(400)
-        .json({ message: "User with that username already exists" });
+      return res.status(400).json({ message: "User with that username already exists" });
     }
 
     const emailExists = await client.user.findFirst({
@@ -55,9 +53,7 @@ const registerUser = async (req: Request, res: Response) => {
     });
 
     if (emailExists) {
-      return res
-        .status(400)
-        .json({ message: "User with that email already exists" });
+      return res.status(400).json({ message: "User with that email already exists" });
     }
 
     const salt = await bcrypt.genSalt(10);

@@ -1,16 +1,19 @@
 import { useGetAllSnippetQuestions } from "../api/CodeSnippetQuestionApi";
 import LoaderComponent from "../components/LoaderComponent";
+import SearchComponent from "../components/SearchComponent";
 import SnippetCard from "../components/SnippetCard";
+import { useSearch } from "../hooks/useSearch";
 
 const Home = () => {
-  const { codeSnippetQuestions, codeSnippetQuestionsLoading } = useGetAllSnippetQuestions();
+  const { q } = useSearch();
 
-  if (codeSnippetQuestionsLoading) {
-    return <LoaderComponent></LoaderComponent>;
-  }
+  const { codeSnippetQuestions, codeSnippetQuestionsLoading } = useGetAllSnippetQuestions(q);
 
   return (
-    <div className="flex flex-col md:mx-5 lg:mx-20  gap-3">
+    <div className="flex flex-col gap-3">
+      <SearchComponent></SearchComponent>
+
+      {codeSnippetQuestionsLoading && <LoaderComponent></LoaderComponent>}
       {codeSnippetQuestions?.map((question) => (
         <SnippetCard key={question.id} question={question}></SnippetCard>
       ))}

@@ -21,7 +21,7 @@ export const useGetAllAnswers = () => {
   };
 
   const { data: codeSnippetAnswers, isLoading: codeSnippetsAnswerLoading } = useQuery({
-    queryKey: ["codeSnippetAnswers"],
+    queryKey: ["codeSnippetAnswers", id],
     queryFn: getAnswers,
     retry: false,
   });
@@ -52,7 +52,7 @@ export const useCreateSnipetAnswer = () => {
   };
 
   const { mutate: createAnswer, error: createAnswerServerError } = useMutation({
-    mutationKey: ["codeSnippetAnswers"],
+    mutationKey: ["codeSnippetAnswers", id],
     mutationFn: postAnswer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["codeSnippetAnswers"] });

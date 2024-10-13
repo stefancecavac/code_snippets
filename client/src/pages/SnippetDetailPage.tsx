@@ -1,5 +1,6 @@
 import { useGetAllAnswers } from "../api/CodeSnippetAnswerApi";
 import { useGetSingleSnippetQuestions } from "../api/CodeSnippetQuestionApi";
+import AnswerNotFound from "../components/AnswerNotFound";
 import LoaderComponent from "../components/LoaderComponent";
 import AnswerComponent from "../components/SnippetDetail/AnswerComponent";
 import SnippetDetailAnswer from "../components/SnippetDetail/SnippetDetailAnswer";
@@ -14,14 +15,16 @@ const SnippetDetailPage = () => {
   }
 
   return codeSnippetQuestion ? (
-    <div className="m-5  ">
+    <>
       <SnippetDetailQuestion codeSnippetQuestion={codeSnippetQuestion}></SnippetDetailQuestion>
       <AnswerComponent></AnswerComponent>
 
-      {codeSnippetAnswers?.map((answer) => (
-        <SnippetDetailAnswer key={answer.id} answer={answer}></SnippetDetailAnswer>
-      ))}
-    </div>
+      {codeSnippetAnswers ? (
+        codeSnippetAnswers?.map((answer) => <SnippetDetailAnswer key={answer.id} answer={answer}></SnippetDetailAnswer>)
+      ) : (
+        <AnswerNotFound></AnswerNotFound>
+      )}
+    </>
   ) : (
     <p>No snippet found</p>
   );

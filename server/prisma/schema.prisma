@@ -18,8 +18,10 @@ model User {
   username     String                @unique
   email        String                @unique
   password     String
+  reputation   Int                   @default(0)
   codeSnippets CodeSnippetQuestion[]
   answers      CodeSnippetAnswer[]
+  ratings      Rating[]
 }
 
 model CodeSnippetQuestion {
@@ -31,9 +33,9 @@ model CodeSnippetQuestion {
   answered       Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String?
+  tags           String[]
+  User           User?    @relation(fields: [userId], references: [id])
+  userId         String?
 
   answers CodeSnippetAnswer[]
 }
@@ -45,10 +47,21 @@ model CodeSnippetAnswer {
   correct    Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  rating     Rating[]
+  totalRaing Int      @default(0)
 
   CodeSnippet   CodeSnippetQuestion? @relation(fields: [codeSnippetId], references: [id])
   codeSnippetId String?
 
   User   User?   @relation(fields: [userId], references: [id])
   userId String?
+}
+
+model Rating {
+  id                  String             @id @default(uuid())
+  ratingType          String
+  CodeSnippetAnswer   CodeSnippetAnswer? @relation(fields: [codeSnippetAnswerId], references: [id])
+  codeSnippetAnswerId String?
+  User                User?              @relation(fields: [userId], references: [id])
+  userId              String?
 }

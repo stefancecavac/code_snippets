@@ -5,7 +5,11 @@ module.exports = {
     "./public/index.html", // Include other paths where dynamic classes might be used
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+      },
+    },
   },
   plugins: [],
 };
